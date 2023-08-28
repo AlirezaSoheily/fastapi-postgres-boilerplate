@@ -7,7 +7,7 @@ from pydantic import Field
 from pydantic.generics import GenericModel
 from starlette.responses import Response
 
-from app import utils
+from .. import utils
 
 T = TypeVar("T")
 

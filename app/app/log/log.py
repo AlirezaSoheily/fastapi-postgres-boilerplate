@@ -1,14 +1,13 @@
-import logging
 import json
+import logging
 from typing import Callable
 
 from fastapi import Request, BackgroundTasks
-from fastapi.routing import APIRoute
 from fastapi.responses import Response
+from fastapi.routing import APIRoute
 
-from app import crud, schemas, exceptions
-from app.db.session import async_session
-
+from .. import crud, schemas, exceptions
+from ..db.session import async_session
 
 logger = logging.getLogger(__name__)
 

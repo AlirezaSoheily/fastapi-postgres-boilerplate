@@ -2,11 +2,11 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from app import models
-from app.core.config import settings
-from app.core.security import get_password_hash
-from app.db import base  # noqa: F401
-from app.db.session import SessionLocal
+from . import base  # noqa: F401
+from .session import SessionLocal
+from .. import models
+from ..core.config import settings
+from ..core.security import get_password_hash
 
 logger = logging.getLogger(__name__)
 

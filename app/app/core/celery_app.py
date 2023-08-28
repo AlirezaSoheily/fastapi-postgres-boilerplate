@@ -1,7 +1,6 @@
 from celery import Celery
 
-from app.core.config import settings
-
+from ..core.config import settings
 
 BROKER_URL = f"amqp://{settings.RABBITMQ_USERNAME}:{settings.RABBITMQ_PASSWORD}@{settings.RABBITMQ_HOST}:{settings.RABBITMQ_PORT}"
 print(f"---------{BROKER_URL}-----")

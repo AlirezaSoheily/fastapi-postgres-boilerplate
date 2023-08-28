@@ -2,7 +2,7 @@ from typing import Optional
 
 import jwt
 
-from app.core.config import settings
+from ..core.config import settings
 
 
 def verify_password_reset_token(token: str) -> Optional[str]:
