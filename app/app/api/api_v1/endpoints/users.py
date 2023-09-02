@@ -5,24 +5,23 @@ from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from starlette import status
-
+from starlette.requests import Request
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
-from app import crud, models, schemas, utils
-from app.api import deps
-from app.core import security
-from app.core.config import settings
-from app.core.security import get_password_hash
-from app.utils import APIResponseType, APIResponse
-from app import exceptions as exc
-from app.utils.user import (
+from .... import crud, models, schemas, utils
+from ....api import deps
+from ....core import security
+from ....core.config import settings
+from ....core.security import get_password_hash
+from ....utils import APIResponseType, APIResponse
+from .... import exceptions as exc
+from ....utils.user import (
     verify_password_reset_token,
 )
 from cache import cache, invalidate
 from cache.util import ONE_DAY_IN_SECONDS
-
 
 router = APIRouter()
 namespace = "user"
@@ -30,8 +29,8 @@ namespace = "user"
 
 @router.post("/token")
 async def login(
-    login_user_in: schemas.LoginUser,
-    db: Session = Depends(deps.get_db_async),
+        login_user_in: schemas.LoginUser,
+        db: Session = Depends(deps.get_db_async),
 ) -> Any:
     """
     Get access and refresh token.
@@ -51,7 +50,7 @@ async def login(
             detail="Inactive user",
             msg_code=utils.MessageCodes.inactive_user
         )
-    
+
     access_token = security.create_access_token(data=user.id)
     refresh_token = security.create_refresh_token(data=user.id)
     return {"access_token": access_token, "refresh_token": refresh_token}
@@ -59,7 +58,7 @@ async def login(
 
 @router.post("/refresh-token")
 async def refresh_token(
-    token: schemas.RefreshToken
+        token: schemas.RefreshToken
 ) -> Any:
     """
     Get access token.
@@ -78,17 +77,17 @@ async def refresh_token(
                 detail="Your token is invalid",
                 msg_code=utils.MessageCodes.invalid_token
             )
-        
+
         if datetime.fromtimestamp(expire_time) < datetime.now():
             raise HTTPException(
-                status_code = status.HTTP_401_UNAUTHORIZED,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    
+
         access_token = security.create_access_token(data=user_id)
         return {"access_token": access_token}
-    
+
     except jwt.ExpiredSignatureError:
         raise exc.InternalServiceError(
             status_code=401,
@@ -99,19 +98,20 @@ async def refresh_token(
 
 @router.post("/me")
 async def me(
-    current_user: models.User = Depends(deps.get_current_user),
+        current_user: models.User = Depends(deps.get_current_user),
 ) -> APIResponseType[schemas.User]:
     """
     Get authenticated user.
     """
     return APIResponse(current_user)
 
+
 @router.post("/reset-password/")
 @invalidate(namespace=namespace)
 async def reset_password(
-    token: str = Body(),
-    new_password: str = Body(),
-    db: Session = Depends(deps.get_db_async),
+        token: str = Body(),
+        new_password: str = Body(),
+        db: Session = Depends(deps.get_db_async),
 ) -> schemas.Msg:
     """
     Reset password.
@@ -146,10 +146,10 @@ async def reset_password(
 @router.get("/")
 @cache(namespace=namespace, expire=ONE_DAY_IN_SECONDS)
 async def read_users(
-    db: AsyncSession = Depends(deps.get_db_async),
-    skip: int = 0,
-    limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+        db: AsyncSession = Depends(deps.get_db_async),
+        skip: int = 0,
+        limit: int = 100,
+        current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> APIResponseType[list[schemas.User]]:
     """
     Retrieve users.
@@ -161,10 +161,10 @@ async def read_users(
 @router.post("/")
 @invalidate(namespace=namespace)
 async def create_user(
-    *,
-    db: AsyncSession = Depends(deps.get_db_async),
-    user_in: schemas.UserCreate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+        *,
+        db: AsyncSession = Depends(deps.get_db_async),
+        user_in: schemas.UserCreate,
+        current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> APIResponseType[schemas.User]:
     """
     Create new user.
@@ -183,12 +183,12 @@ async def create_user(
 @router.put("/update/me")
 @invalidate(namespace=namespace)
 async def update_user_me(
-    *,
-    db: AsyncSession = Depends(deps.get_db_async),
-    password: str | None = Body(),
-    full_name: str | None = Body(),
-    email: str | None = Body(),
-    current_user: models.User = Depends(deps.get_current_active_user),
+        *,
+        db: AsyncSession = Depends(deps.get_db_async),
+        password: str | None = Body(),
+        full_name: str | None = Body(),
+        email: str | None = Body(),
+        current_user: models.User = Depends(deps.get_current_active_user),
 ) -> APIResponseType[schemas.User]:
     """
     Update own user.
@@ -208,9 +208,9 @@ async def update_user_me(
 @router.get("/{user_id}")
 @cache(namespace=namespace, expire=ONE_DAY_IN_SECONDS)
 async def read_user_by_id(
-    user_id: int,
-    current_user: models.User = Depends(deps.get_current_active_user),
-    db: AsyncSession = Depends(deps.get_db_async),
+        user_id: int,
+        current_user: models.User = Depends(deps.get_current_active_user),
+        db: AsyncSession = Depends(deps.get_db_async),
 ) -> APIResponseType[schemas.User]:
     """
     Get a specific user by id.
@@ -235,11 +235,11 @@ async def read_user_by_id(
 
 @router.put("/{user_id}")
 async def update_user(
-    *,
-    db: AsyncSession = Depends(deps.get_db_async),
-    user_id: int,
-    user_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+        *,
+        db: AsyncSession = Depends(deps.get_db_async),
+        user_id: int,
+        user_in: schemas.UserUpdate,
+        current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> APIResponseType[schemas.User]:
     """
     Update a user.

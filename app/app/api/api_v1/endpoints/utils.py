@@ -3,19 +3,18 @@ from fastapi import APIRouter, Depends, WebSocket
 from fastapi.responses import HTMLResponse
 from celery.result import AsyncResult
 
-from app import models, schemas
-from app.api import deps
-from app.core.celery_app import celery_app
+from .... import models, schemas
+from ....api import deps
+from ....core.celery_app import celery_app
 from cache import Cache
-
 
 router = APIRouter()
 
 
 @router.post("/test-celery/", response_model=schemas.Msg, status_code=201)
 def test_celery(
-    msg: schemas.Msg,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+        msg: schemas.Msg,
+        current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Test Celery worker.
@@ -28,7 +27,7 @@ def test_celery(
 
 @router.get("/test-redis/", status_code=201)
 async def test_redis(
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+        current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
     Test redis connection.

@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
-from app import crud, models, schemas, utils
-from app.core.config import settings
-from app.db.session import SessionLocal, async_session
-from app import exceptions as exc
+from .. import crud, models, schemas, utils
+from ..core.config import settings
+from ..db.session import SessionLocal, async_session
+from .. import exceptions as exc
 
 
 def get_db() -> Generator:

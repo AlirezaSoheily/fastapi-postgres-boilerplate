@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     email: EmailStr | None = None
     full_name: str | None = None
     is_active: bool | None = True
+    is_admin: bool | None = False
     is_superuser: bool = False
 
 
