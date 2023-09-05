@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import List
 from .user import User
@@ -55,6 +55,7 @@ class Book(BookBase):
 
 
 class ClientBase(BaseModel):
+    email: EmailStr | None = None
     balance: int
     is_restricted: bool
     user_id: int
@@ -62,7 +63,7 @@ class ClientBase(BaseModel):
 
 class ClientCreate(ClientBase):
     user_id: int
-    balance: int
+    balance: int = 0
 
 
 class ClientUpdate(ClientBase):
@@ -83,12 +84,17 @@ class Client(ClientBase):
 
 
 class BuyBase(BaseModel):
-    book_id: int
-    client_id: int
+    book_id: int | None
+    client_id: int | None
 
 
-class BuyCreate(BuyBase):
+class BuyCreate(BaseModel):
     pass
+
+
+class BuyIn(BaseModel):
+    book_name: str | None
+    client_email: EmailStr | None
 
 
 class BuyUpdate(BuyBase):
@@ -97,8 +103,8 @@ class BuyUpdate(BuyBase):
 
 class Buy(BuyBase):
     id: int
-    client: Client
-    book: Book
+    client: Client | None
+    book: Book | None
 
     class Config:
         orm_mode = True
@@ -114,6 +120,11 @@ class BorrowBase(BaseModel):
 class BorrowCreate(BorrowBase):
     book_id: int
     client_id: int
+
+
+class BorrowIn(BorrowBase):
+    book_name: int
+    client_email: int
 
 
 class BorrowUpdate(BorrowBase):

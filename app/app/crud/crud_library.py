@@ -1,7 +1,7 @@
 from typing import Any, Dict, Union, Awaitable
 from .. import exceptions as exc
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -37,23 +37,46 @@ class CRUDBook(CRUDBase[Book, BookCreate, BookUpdate]):
                 msg_code=utils.MessageCodes.not_found,
             )
 
+    def get_by_name(self, db: Session | AsyncSession, *, name: str
+                    ):
+        query = select(Book).filter(Book.title == name)
+        return self._first(db.scalars(query))
+
 
 book = CRUDBook(Book)
 
 
 class CRUDClient(CRUDBase[Client, ClientCreate, ClientUpdate]):
-    async def create(self, db: Session | AsyncSession, *, user_id: int) -> Client:
-        db_obj = Client(user_id=user_id)
+    async def create(self, db: Session | AsyncSession, *, user_id: int, email: str) -> Client:
+        db_obj = Client(user_id=user_id, email=email)
         db.add(db_obj)
         await db.commit()
         return db_obj
+
+    async def get_by_email(
+            self, db: Session | AsyncSession, *, email: str
+    ) -> Client | None | Awaitable[Client | None]:
+        query = select(Client).join(User).filter(User.email == email)
+        result = await db.execute(query)
+        client_with_email = result.scalar_one_or_none()
+        return client_with_email
 
 
 client = CRUDClient(Client)
 
 
 class CRUDBuy(CRUDBase[Buy, BuyCreate, BuyUpdate]):
-    ...
+    async def create(self, db: Session | AsyncSession, *, book_name: str, client_email: str) -> Buy:
+        book_obj = await book.get_by_name(db, name=book_name)
+        client_obj = await client.get_by_email(db, email=client_email)
+        book_id = int(str(book_obj).split(':')[-1])
+        client_id = int(str(client_obj).split(':')[-1])
+        buy_obj = {'book_id': book_id, 'client_id': client_id}
+        book_obj.salable_quantity -= 1
+        book_obj.stock_amount -= 1
+        client_obj.balance -= book_obj.price
+        await db.commit()
+        return await super().create(db, obj_in=buy_obj)
 
 
 buy = CRUDBuy(Buy)

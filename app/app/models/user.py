@@ -18,6 +18,7 @@ class User(Base):
 
 class Client(Base):
     id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), index=True)
     user = relationship('User', back_populates='client')
     balance = Column(Integer, default=0)
