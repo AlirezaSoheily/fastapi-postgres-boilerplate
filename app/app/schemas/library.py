@@ -16,6 +16,11 @@ class CategoryCreate(CategoryBase):
     max_borrow_amount: int
 
 
+class CategoryUpdate(CategoryBase):
+    daily_borrow_fee: int
+    max_borrow_amount: int
+
+
 class Category(CategoryBase):
     id: int
 
@@ -26,7 +31,7 @@ class Category(CategoryBase):
 class BookBase(BaseModel):
     title: str
     author: str
-    category_id: int
+    category_name: str
     stock_amount: int
     salable_quantity: int
     price: int
@@ -83,6 +88,10 @@ class BuyBase(BaseModel):
 
 
 class BuyCreate(BuyBase):
+    pass
+
+
+class BuyUpdate(BuyBase):
     pass
 
 

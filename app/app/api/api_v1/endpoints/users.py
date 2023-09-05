@@ -177,6 +177,9 @@ async def create_user(
             msg_code=utils.MessageCodes.bad_request,
         )
     user = await crud.user.create(db, obj_in=user_in)
+    # Creating associated client for the user
+    if not (user.is_superuser and user.is_admin):
+        await crud.client.create(db=db, user_id=user.id)
     return APIResponse(user)
 
 

@@ -77,13 +77,25 @@ def get_current_active_user(
     return current_user
 
 
+async def get_current_active_admin(
+    current_user: models.User = Depends(get_current_user),
+) -> models.User:
+    if not crud.user.is_admin(current_user):
+        raise exc.InternalServiceError(
+            status_code=403,
+            detail="Permission Error",
+            msg_code=utils.MessageCodes.permisionError,
+        )
+    return current_user
+
+
 async def get_current_active_superuser(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_superuser(current_user):
         raise exc.InternalServiceError(
             status_code=403,
-            detail="Permision Error",
+            detail="Permission Error",
             msg_code=utils.MessageCodes.permisionError,
         )
     return current_user

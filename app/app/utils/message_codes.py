@@ -11,7 +11,7 @@ class MessageCodes:
     operation_failed = 5
     incorrect_email_or_password = 6
     inactive_user = 7
-    permisionError = 8,
+    permisionError = 8
     invalid_token = 9
     # services code start from 1001
 

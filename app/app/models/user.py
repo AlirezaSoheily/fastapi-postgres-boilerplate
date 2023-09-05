@@ -28,17 +28,17 @@ class Client(Base):
 
 class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    name = Column(String, unique=True, index=True)
     daily_borrow_fee = Column(Integer)
     max_borrow_amount = Column(Integer)
-    books = relationship('Book', back_populates='category')
+    book = relationship('Book', back_populates='category')
 
 
 class Book(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     author = Column(String, index=True)
-    category_id = Column(Integer, ForeignKey('category.id'))
+    category_name = Column(String, ForeignKey('category.name'))
     category = relationship('Category', back_populates='book')
     stock_amount = Column(Integer)
     salable_quantity = Column(Integer)
@@ -65,8 +65,6 @@ class Borrow(Base):
     book = relationship('Book', back_populates='borrow')
     client_id = Column(Integer, ForeignKey('client.id'))
     client = relationship('Client', back_populates='borrow')
-
-
 
 # Tables for many-to-many relation of user-buy and user-borrow
 # user_buy_association = Table(

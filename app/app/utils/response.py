@@ -44,7 +44,7 @@ class APIResponseType(GenericModel, Generic[T]):
 
 class APIResponse(GenericModel, Generic[T]):
     """
-    Custom reponse class for apis
+    Custom response class for apis
     Adds custom header, messages to reponses
     """
 
@@ -74,8 +74,8 @@ class APIResponse(GenericModel, Generic[T]):
 
 class APIErrorResponse(JSONResponse):
     """
-    Custom error reponse class for apis
-    Adds custom header, messages to error reponses
+    Custom error response class for apis
+    Adds custom header, messages to error responses
     """
 
     def __init__(self, data, msg_code=0, msg_status=0, **kwargs):
