@@ -1,7 +1,7 @@
 from typing import Any, Dict, Union, Awaitable
 from .. import exceptions as exc
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -53,13 +53,18 @@ class CRUDClient(CRUDBase[Client, ClientCreate, ClientUpdate]):
         await db.commit()
         return db_obj
 
-    async def get_by_email(
+    # Client | None | Awaitable[Client | None]
+    def get_by_email(
             self, db: Session | AsyncSession, *, email: str
-    ) -> Client | None | Awaitable[Client | None]:
-        query = select(Client).join(User).filter(User.email == email)
-        result = await db.execute(query)
-        client_with_email = result.scalar_one_or_none()
-        return client_with_email
+    ) -> Awaitable[Client | None]:
+        return self._first(db.scalars(select(self.model).options(selectinload(self.model.user.email == email))))
+
+
+
+        # query = select(Client).join(User).filter(User.email == email)
+        # result = await db.execute(query)
+        # client_with_email = result.scalar_one_or_none()
+        # return client_with_email
 
 
 client = CRUDClient(Client)

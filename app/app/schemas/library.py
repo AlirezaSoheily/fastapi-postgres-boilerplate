@@ -72,6 +72,10 @@ class ClientUpdate(ClientBase):
     is_restricted: bool
 
 
+class ClientUpdateBalance(BaseModel):
+    email: EmailStr
+    add_amount: int
+
 class Client(ClientBase):
     id: int
     user: User
@@ -117,9 +121,10 @@ class BorrowBase(BaseModel):
     client_id: int
 
 
-class BorrowCreate(BorrowBase):
+class BorrowCreate(BaseModel):
     book_id: int
     client_id: int
+    borrow_days: int
 
 
 class BorrowIn(BorrowBase):
@@ -128,8 +133,8 @@ class BorrowIn(BorrowBase):
 
 
 class BorrowUpdate(BorrowBase):
-    borrow_days: int | None = 1
-    returned_date: datetime | None = None
+    borrow_days: int | None
+    returned_date: datetime | None
 
 
 class Borrow(BorrowBase):
