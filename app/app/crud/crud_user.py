@@ -1,10 +1,8 @@
 from typing import Any, Dict, Union, Awaitable
-
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
 from ..core.security import get_password_hash, verify_password
 from ..crud.base import CRUDBase
 from ..models.user import User
