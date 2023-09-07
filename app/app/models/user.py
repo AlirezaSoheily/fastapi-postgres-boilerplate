@@ -13,18 +13,10 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     is_admin = Column(Boolean(), default=False)
     is_superuser = Column(Boolean(), default=False)
-    client = relationship('Client', uselist=False, back_populates='user')
-
-
-class Client(Base):
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'), index=True)
-    user = relationship('User', back_populates='client')
     balance = Column(Integer, default=0)
     is_restricted = Column(Boolean(), default=False)
-    buy = relationship('Buy', back_populates='client')
-    borrow = relationship('Borrow', back_populates='client')
+    buy = relationship('Buy', back_populates='user')
+    borrow = relationship('Borrow', back_populates='user')
 
 
 class Category(Base):
@@ -53,8 +45,8 @@ class Buy(Base):
     bought_date = Column(DateTime(timezone=True), default=datetime.utcnow, index=True)
     book_id = Column(Integer, ForeignKey('book.id'))
     book = relationship('Book', back_populates='buy')
-    client_id = Column(Integer, ForeignKey('client.id'))
-    client = relationship('Client', back_populates='buy')
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='buy')
 
 
 class Borrow(Base):
@@ -64,22 +56,5 @@ class Borrow(Base):
     returned_date = Column(DateTime(timezone=True), default=None, index=True, nullable=True)
     book_id = Column(Integer, ForeignKey('book.id'))
     book = relationship('Book', back_populates='borrow')
-    client_id = Column(Integer, ForeignKey('client.id'))
-    client = relationship('Client', back_populates='borrow')
-
-# Tables for many-to-many relation of user-buy and user-borrow
-# user_buy_association = Table(
-#     'user_buy_association',
-#     Base.metadata,
-#     Column('user_id', Integer, ForeignKey('user.id')),
-#     Column('buy_id', Integer, ForeignKey('buy.id'))
-#
-# )
-#
-# user_borrow_association = Table(
-#     'user_borrow_association',
-#     Base.metadata,
-#     Column('user_id', Integer, ForeignKey('user.id')),
-#     Column('borrow_id', Integer, ForeignKey('borrow.id'))
-#
-# )
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='borrow')

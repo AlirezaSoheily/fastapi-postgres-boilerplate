@@ -54,42 +54,42 @@ class Book(BookBase):
         orm_mode = True
 
 
-class ClientBase(BaseModel):
-    email: EmailStr | None = None
-    balance: int
-    is_restricted: bool
-    user_id: int
-
-
-class ClientCreate(ClientBase):
-    user_id: int
-    balance: int = 0
-
-
-class ClientUpdate(ClientBase):
-    user_id: int
-    balance: int
-    is_restricted: bool
-
-
-class ClientUpdateBalance(BaseModel):
-    email: EmailStr
-    add_amount: int
-
-class Client(ClientBase):
-    id: int
-    user: User
-
-    # buy: 'Buy'
-    # borrow: 'Borrow'
-
-    class Config:
-        orm_mode = True
+# class ClientBase(BaseModel):
+#     email: EmailStr | None = None
+#     balance: int
+#     is_restricted: bool
+#     user_id: int
+#
+#
+# class ClientCreate(ClientBase):
+#     user_id: int
+#     balance: int = 0
+#
+#
+# class ClientUpdate(ClientBase):
+#     user_id: int
+#     balance: int
+#     is_restricted: bool
+#
+#
+# class ClientUpdateBalance(BaseModel):
+#     email: EmailStr
+#     add_amount: int
+#
+# class Client(ClientBase):
+#     id: int
+#     user: User
+#
+#     # buy: 'Buy'
+#     # borrow: 'Borrow'
+#
+#     class Config:
+#         orm_mode = True
 
 
 class BuyBase(BaseModel):
     book_id: int | None
-    client_id: int | None
+    user_id: int | None
 
 
 class BuyCreate(BaseModel):
@@ -98,7 +98,7 @@ class BuyCreate(BaseModel):
 
 class BuyIn(BaseModel):
     book_name: str | None
-    client_email: EmailStr | None
+    user_email: EmailStr | None
 
 
 class BuyUpdate(BuyBase):
@@ -107,7 +107,7 @@ class BuyUpdate(BuyBase):
 
 class Buy(BuyBase):
     id: int
-    client: Client | None
+    user: User | None
     book: Book | None
 
     class Config:
@@ -118,18 +118,18 @@ class BorrowBase(BaseModel):
     borrow_days: int
     returned_date: datetime
     book_id: int
-    client_id: int
+    user_id: int
 
 
 class BorrowCreate(BaseModel):
     book_id: int
-    client_id: int
+    user_id: int
     borrow_days: int
 
 
-class BorrowIn(BorrowBase):
-    book_name: int
-    client_email: int
+class BorrowIn(BaseModel):
+    book_name: str
+    user_email: EmailStr
 
 
 class BorrowUpdate(BorrowBase):
@@ -139,8 +139,12 @@ class BorrowUpdate(BorrowBase):
 
 class Borrow(BorrowBase):
     id: int
-    client: Client
+    user: User
     book: Book
 
     class Config:
         orm_mode = True
+
+
+class BookSaleabilityReport(BaseModel):
+    pass

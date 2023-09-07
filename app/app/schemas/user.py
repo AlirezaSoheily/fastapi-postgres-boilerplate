@@ -7,9 +7,12 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     email: EmailStr | None = None
     full_name: str | None = None
+    balance: int | None = 0
+    is_restricted: bool | None = None
     is_active: bool | None = True
     is_admin: bool | None = False
     is_superuser: bool = False
+
 
 
 # Properties to receive via API on creation
@@ -43,3 +46,8 @@ class UserInDB(UserInDBBase):
 class LoginUser(BaseModel):
     email: EmailStr
     password: str
+
+
+class UserUpdateBalance(BaseModel):
+    email: EmailStr
+    add_amount: int
