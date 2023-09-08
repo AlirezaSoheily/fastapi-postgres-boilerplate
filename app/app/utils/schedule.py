@@ -1,6 +1,6 @@
 import logging
 from rocketry import Rocketry
-from app.app.api.api_v1.services.schedule import get_active_borrow_objects, reduce_borrow_fee_from_user_balance
+from ..api.api_v1.services.schedule import check_user_violation, get_active_borrow_objects, reduce_borrow_fee_from_user_balance
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)

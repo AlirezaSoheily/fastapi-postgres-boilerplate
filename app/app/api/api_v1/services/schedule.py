@@ -1,11 +1,14 @@
 from sqlalchemy.future import select
 from ....models import Borrow
-from ....utils.schedule import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 from ... import deps
 from .user import reduce_from_user_balance
 from datetime import datetime, timedelta
+import logging
+
+logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
+logger = logging.getLogger(__file__)
 
 
 async def get_active_borrow_objects(db: AsyncSession = Depends(deps.get_db_async)):

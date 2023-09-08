@@ -28,3 +28,14 @@ def check_book_availability(book_availability: int, book_wanted: int):
             detail="there is not enough of this book in library.",
             msg_code=utils.MessageCodes.bad_request,
         )
+
+
+async def get_category_by_name(db, name: str):
+    category = await crud.category.get_by_name(db, name=name)
+    if not category:
+        raise exc.InternalServiceError(
+            status_code=400,
+            detail="A category with this name does not exist in the system.",
+            msg_code=utils.MessageCodes.bad_request
+        )
+    return category
