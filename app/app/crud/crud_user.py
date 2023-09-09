@@ -76,10 +76,13 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return self._all(db.scalars(query))
 
     def get_all_users_joined(self, db: Session | AsyncSession) -> List[User]:
-        # query = select(User).options(joinedload(User.borrow).joinedload(Borrow.book))
         query = select(User).options(selectinload(User.borrow).selectinload(Borrow.book)).distinct(User.id).order_by(
             User.id)
         return self._all(db.scalars(query))
+
+    def get_user_by_email_eager(self, db: Session | AsyncSession, email) -> User:
+        query = select(User).options(selectinload(User.borrow).selectinload(Borrow.book)).filter(User.email == email)
+        return self._first(db.scalars(query))
 
 
 user = CRUDUser(User)

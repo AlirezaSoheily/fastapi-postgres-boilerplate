@@ -54,7 +54,7 @@ async def un_restrict_users(users: List[User], db: AsyncSession = Depends(deps.g
         await db.commit()
 
 
-async def get_violated_users(db: AsyncSession = Depends(deps.get_db_async)):
+async def get_violated_users(db):
     users = await crud.user.get_all_users_joined(db)
     violations = {}
     for user in users:
@@ -75,6 +75,22 @@ async def get_violated_users(db: AsyncSession = Depends(deps.get_db_async)):
                         violations[user.email] = [borrow]
                     else:
                         violations[user.email].append(borrow)
+    sorted_dict = {k: v for k, v in sorted(violations.items(), key=lambda x: len(x[1]))}
+    return sorted_dict
+
+
+async def get_a_user_violations(db, email):
+    user = await crud.user.get_user_by_email_eager(db, email=email)
+    violations = []
+    for borrow in user.borrow:
+        days = timedelta(days=borrow.borrow_days)
+        now = datetime.now(borrow.borrowed_date.tzinfo)
+        if borrow.returned_date:
+            if borrow.returned_date > (borrow.borrowed_date + days):
+                violations.append(borrow)
+        else:
+            if now > (borrow.borrowed_date + days):
+                violations.append(borrow)
     return violations
 
 

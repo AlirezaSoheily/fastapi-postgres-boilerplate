@@ -6,10 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from .... import crud, models, schemas, utils
 from ....api import deps
+from pydantic import EmailStr
 from ....models import Book, Borrow
 from ....utils import APIResponseType, APIResponse
 from .... import exceptions as exc
-from cache import cache, invalidate
+from cache import cache
 from cache.util import ONE_DAY_IN_SECONDS
 
 router = APIRouter()
@@ -42,6 +43,7 @@ async def saleable_books(
 
 
 @router.get('/profit')
+@cache(namespace=namespace, expire=ONE_DAY_IN_SECONDS)
 async def profit_from_categories(*, db: AsyncSession = Depends(deps.get_db_async),
                                  current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
     """
@@ -55,12 +57,17 @@ async def profit_from_categories(*, db: AsyncSession = Depends(deps.get_db_async
 
 
 @router.get('/get_violated_users')
-async def get_violated_users(*, db: AsyncSession = Depends(deps.get_db_async),
+async def get_violated_users(*, db: AsyncSession = Depends(deps.get_db_async)
+                             , user_email: EmailStr | None = None,
                              current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
     """
     get the violation from users by admin.
     """
-    violations = await services.get_violated_users(db)
+    if user_email:
+        user_violations = await services.get_a_user_violations(db, email=user_email)
+        violations = {user_email: user_violations}
+    else:
+        violations = await services.get_violated_users(db)
     return violations
 
 
