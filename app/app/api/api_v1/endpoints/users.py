@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
 
+from .. import services
 from .... import crud, models, schemas, utils
 from ....api import deps
 from ....core import security
@@ -253,3 +254,15 @@ async def update_user(
         )
     user = await crud.user.update(db, db_obj=user, obj_in=user_in)
     return APIResponse(user)
+
+
+@router.post('/balance/charge')
+async def charge_balance(*, db: AsyncSession = Depends(deps.get_db_async), user_in: schemas.UserUpdateBalance,
+                         current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
+    """
+    Charge a user balance by admin.
+    """
+
+    user = await services.get_user_by_email(db, user_in.email)
+    await services.add_to_user_balance(db, user=user, add_amount=user_in.add_amount)
+    return {"user's name": user.full_name, "balance": user.balance}

@@ -41,7 +41,7 @@ class BookCreate(BookBase):
     pass
 
 
-class BookUpdate(BookBase):
+class BookUpdate(BaseModel):
     stock_amount: int
     salable_quantity: int
 

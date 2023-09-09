@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
-
 from .... import crud, utils
 from .... import exceptions as exc
-from ....models import Book, User
+from ....models import Book, User, Borrow
 
 
 async def get_borrow_with_user_and_book(db, user: User, book: Book):
@@ -13,16 +12,17 @@ async def get_borrow_with_user_and_book(db, user: User, book: Book):
             detail="A borrow record with this user and book does not exist in the system.",
             msg_code=utils.MessageCodes.bad_request
         )
+    return borrow_obj
 
 
 async def check_if_user_borrowed_max_amount_from_category(db, user: User, book: Book):
     borrow_objs = await crud.borrow.get_not_returned_borrow_obj_from_user(db, user=user)
+    category = await crud.category.get_by_name(db, name=book.category_name)
     category_count = 0
     for borrow in borrow_objs:
-        borrow_obj = borrow[0]
-        if borrow_obj.book.category_name == book.category_name:
+        if borrow.book.category_name == book.category_name:
             category_count += 1
-    if category_count >= book.category.max_borrow_amount:
+    if category_count >= category.max_borrow_amount:
         raise exc.InternalServiceError(
             status_code=400,
             detail="You have borrowed too much from this category of book, please consider borrowing a book with "
@@ -41,3 +41,15 @@ async def calculate_max_allowed_borrow_days(db, book: Book):
     if max_borrow_days_allowed < 3:
         max_borrow_days_allowed = 3
     return max_borrow_days_allowed
+
+
+async def return_book(db, borrow: Borrow):
+    borrow.returned_date = datetime.utcnow()
+    borrow.book.stock_amount += 1
+    borrow.book.salable_quantity += 1
+    await db.commit()
+
+
+async def get_all_borrow_objects_joined(db):
+    borrow = await crud.borrow.get_all_joined(db)
+    return borrow

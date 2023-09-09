@@ -1,6 +1,12 @@
+from datetime import timedelta, datetime
+from typing import List
+
 from .... import crud, utils
 from .... import exceptions as exc
 from ....models import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from ... import deps
 
 
 async def get_user_by_email(db, email):
@@ -30,6 +36,46 @@ def check_user_restrict(user: User):
             detail="you are restricted and you can't buy or borrow this book.",
             msg_code=utils.MessageCodes.permisionError,
         )
+
+
+async def get_restricted_users(db: AsyncSession = Depends(deps.get_db_async)):
+    restricted_users = await crud.user.get_restricted_users(db)
+    return restricted_users
+
+
+async def un_restrict_users(users: List[User], db: AsyncSession = Depends(deps.get_db_async)):
+    for user in users:
+        for borrow in user.borrow:
+            days = timedelta(days=borrow.borrow_days)
+            if datetime.utcnow() > (borrow.borrowed_date + days):
+                if not borrow.returned_date:
+                    return None
+        user.is_restricted = False
+        await db.commit()
+
+
+async def get_violated_users(db: AsyncSession = Depends(deps.get_db_async)):
+    users = await crud.user.get_all_users_joined(db)
+    violations = {}
+    for user in users:
+        for borrow in user.borrow:
+            days = timedelta(days=borrow.borrow_days)
+            now = datetime.now(borrow.borrowed_date.tzinfo)
+            if borrow.returned_date:
+                if borrow.returned_date > (borrow.borrowed_date + days):
+                    user_has_dict_key = violations.get(user.email, None)
+                    if not user_has_dict_key:
+                        violations[user.email] = [borrow]
+                    else:
+                        violations[user.email].append(borrow)
+            else:
+                if now > (borrow.borrowed_date + days):
+                    user_has_dict_key = violations.get(user.email, None)
+                    if not user_has_dict_key:
+                        violations[user.email] = [borrow]
+                    else:
+                        violations[user.email].append(borrow)
+    return violations
 
 
 async def reduce_from_user_balance(db, user: User, reduce_amount: int):

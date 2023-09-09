@@ -1,11 +1,11 @@
-from typing import Any, Dict, Union, Awaitable
+from typing import Any, Dict, Union, Awaitable, List
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from ..core.security import get_password_hash, verify_password
 from ..crud.base import CRUDBase
-from ..models.user import User
+from ..models.user import User, Borrow
 from ..schemas.user import UserCreate, UserUpdate
 
 
@@ -70,6 +70,16 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     def is_superuser(self, user: User) -> bool:
         return user.is_superuser
+
+    def get_restricted_users(self, db: Session | AsyncSession) -> List[User]:
+        query = select(User).options(joinedload(User.Borrow)).filter(User.is_restricted == True)
+        return self._all(db.scalars(query))
+
+    def get_all_users_joined(self, db: Session | AsyncSession) -> List[User]:
+        # query = select(User).options(joinedload(User.borrow).joinedload(Borrow.book))
+        query = select(User).options(selectinload(User.borrow).selectinload(Borrow.book)).distinct(User.id).order_by(
+            User.id)
+        return self._all(db.scalars(query))
 
 
 user = CRUDUser(User)

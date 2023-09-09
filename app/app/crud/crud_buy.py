@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union, Awaitable
+from typing import Any, Dict, Union, Awaitable, List
 
 from . import book
 from .. import exceptions as exc
@@ -25,6 +25,10 @@ class CRUDBuy(CRUDBase[Buy, BuyCreate, BuyUpdate]):
         await services.reduce_one_book_from_db(db, book=book_obj)
         await services.reduce_from_user_balance(db, user=user_obj, reduce_amount=book_obj.price)
         return await super().create(db, obj_in=buy_obj)
+
+    def get_all_joined(self, db: Session | AsyncSession) -> List[Buy]:
+        query = select(Buy).options(joinedload(Buy.book).joinedload(Book.category))
+        return self._all(db.scalars(query))
 
 
 buy = CRUDBuy(Buy)
