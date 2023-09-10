@@ -38,19 +38,21 @@ def check_user_restrict(user: User):
         )
 
 
-async def get_restricted_users(db: AsyncSession = Depends(deps.get_db_async)):
+async def get_restricted_users(db):
     restricted_users = await crud.user.get_restricted_users(db)
     return restricted_users
 
 
-async def un_restrict_users(users: List[User], db: AsyncSession = Depends(deps.get_db_async)):
+async def un_restrict_users(users: List[User], db):
     for user in users:
         for borrow in user.borrow:
             days = timedelta(days=borrow.borrow_days)
-            if datetime.utcnow() > (borrow.borrowed_date + days):
+            now = datetime.now(borrow.borrowed_date.tzinfo)
+            if now > (borrow.borrowed_date + days):
                 if not borrow.returned_date:
                     return None
         user.is_restricted = False
+
         await db.commit()
 
 
@@ -96,7 +98,7 @@ async def get_a_user_violations(db, email):
 
 async def reduce_from_user_balance(db, user: User, reduce_amount: int):
     user.balance -= reduce_amount
-    await db.commit()
+    # await db.commit()
     return True
 
 

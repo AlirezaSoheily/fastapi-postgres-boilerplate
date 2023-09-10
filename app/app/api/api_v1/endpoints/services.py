@@ -114,3 +114,39 @@ async def return_book(*, db: AsyncSession = Depends(deps.get_db_async), borrow_i
     borrow_obj = await services.get_borrow_with_user_and_book(db, user=user, book=book)
     await services.return_book(db, borrow=borrow_obj)
     return APIResponse(borrow_obj)
+
+
+@router.get('/book_borrow_records')
+async def book_borrow_records(*, db: AsyncSession = Depends(deps.get_db_async)
+                              , book_name: str,
+                              current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
+    """
+    get a book's borrow records by admin.
+    """
+    book = await services.get_book_by_name(db, name=book_name)
+    records = await services.get_a_book_borrow_records(db, book=book)
+    return records
+
+
+@router.get('/borrow_group_by_books')
+async def borrow_group_by_books(*, db: AsyncSession = Depends(deps.get_db_async),
+                                current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
+    """
+    get a book's borrow records grouped by books by admin.
+    """
+    result = await services.get_borrows_group_by_books(db)
+    count_dict = services.count_occurrences_of_unique_values(result)
+    answer = await services.get_books_names(db, count_dict)
+    return answer
+
+
+@router.get('/buy_group_by_books')
+async def buys_group_by_books(*, db: AsyncSession = Depends(deps.get_db_async),
+                              current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
+    """
+    get a book's buys records grouped by books by admin.
+    """
+    result = await services.get_buys_group_by_books(db)
+    count_dict = services.count_occurrences_of_unique_values(result)
+    answer = await services.get_books_names(db, count_dict)
+    return answer

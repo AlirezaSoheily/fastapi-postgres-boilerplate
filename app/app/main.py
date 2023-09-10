@@ -5,10 +5,10 @@ from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.api_v1.api import api_router
-from app.core.config import settings
-from app.models import User
-from app.exceptions import (
+from app.app.api.api_v1.api import api_router
+from app.app.core.config import settings
+from app.app.models import User
+from app.app.exceptions import (
     http_exceptions,
     internal_exceptions,
     internal_service_exceptions,

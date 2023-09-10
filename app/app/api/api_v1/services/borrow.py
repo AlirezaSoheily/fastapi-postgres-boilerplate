@@ -53,3 +53,13 @@ async def return_book(db, borrow: Borrow):
 async def get_all_borrow_objects_joined(db):
     borrow = await crud.borrow.get_all_joined(db)
     return borrow
+
+
+async def get_a_book_borrow_records(db, book: Book):
+    records = await crud.borrow.book_records(db, book=book)
+    return records
+
+
+async def get_borrows_group_by_books(db):
+    result = await crud.borrow.group_by_books(db)
+    return result

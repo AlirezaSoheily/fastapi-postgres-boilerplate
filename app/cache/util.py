@@ -4,7 +4,7 @@ import json
 from datetime import date, datetime
 from decimal import Decimal
 
-from app.db.base_class import Base
+from app.app.db.base_class import Base
 
 from dateutil import parser
 

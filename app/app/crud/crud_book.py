@@ -22,4 +22,5 @@ class CRUDBook(CRUDBase[Book, BookCreate, BookUpdate]):
         return self._all(db.scalars(query))
 
 
+
 book = CRUDBook(Book)

@@ -72,7 +72,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return user.is_superuser
 
     def get_restricted_users(self, db: Session | AsyncSession) -> List[User]:
-        query = select(User).options(joinedload(User.Borrow)).filter(User.is_restricted == True)
+        # query = select(User).options(joinedload(User.borrow)).filter(User.is_restricted == True)
+        query = select(User).options(selectinload(User.borrow)).filter(User.is_restricted == True)
         return self._all(db.scalars(query))
 
     def get_all_users_joined(self, db: Session | AsyncSession) -> List[User]:
