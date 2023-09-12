@@ -1,13 +1,9 @@
-from typing import Awaitable
-from .crud_category import category
-from .. import exceptions as exc
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from ..crud.base import CRUDBase
 from ..models.user import Book
 from ..schemas.library import BookCreate, BookUpdate
-from .. import utils
 
 
 class CRUDBook(CRUDBase[Book, BookCreate, BookUpdate]):
@@ -20,7 +16,6 @@ class CRUDBook(CRUDBase[Book, BookCreate, BookUpdate]):
     def get_saleable_books(self, db: Session | AsyncSession):
         query = select(Book).filter(Book.salable_quantity > 0)
         return self._all(db.scalars(query))
-
 
 
 book = CRUDBook(Book)

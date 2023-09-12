@@ -1,9 +1,6 @@
-from sqlalchemy.future import select
 from ....models import Borrow
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
 from .... import crud
-from ... import deps
 from .user import reduce_from_user_balance
 from datetime import datetime, timedelta
 import logging

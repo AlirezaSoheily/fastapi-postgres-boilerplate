@@ -1,13 +1,11 @@
 from asyncio import iscoroutine
 from datetime import datetime
 from typing import Awaitable, Any, Generic, Type, TypeVar
-
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
-
 from ..db.base_class import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -28,14 +26,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     async def _commit_refresh_async(
-        self, db: AsyncSession, db_obj: ModelType
+            self, db: AsyncSession, db_obj: ModelType
     ) -> ModelType:
         await db.commit()
         await db.refresh(db_obj)
         return db_obj
 
     def _commit_refresh(
-        self, db: Session | AsyncSession, db_obj: ModelType
+            self, db: Session | AsyncSession, db_obj: ModelType
     ) -> ModelType | Awaitable[ModelType]:
         if isinstance(db, AsyncSession):
             return self._commit_refresh_async(db, db_obj=db_obj)
@@ -71,18 +69,18 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return scalars.all()
 
     def get(
-        self, db: Session | AsyncSession, id: Any
+            self, db: Session | AsyncSession, id: Any
     ) -> ModelType | Awaitable[ModelType] | None:
         query = select(self.model).filter(self.model.id == id)
         return self._first(db.scalars(query))
 
     def get_multi(
-        self,
-        db: Session | AsyncSession,
-        *,
-        skip: int = 0,
-        limit: int | None = 100,
-        asc: bool = False
+            self,
+            db: Session | AsyncSession,
+            *,
+            skip: int = 0,
+            limit: int | None = 100,
+            asc: bool = False
     ) -> list[ModelType] | Awaitable[list[ModelType]]:
         query = (
             select(self.model)
@@ -94,7 +92,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return self._all(db.scalars(query.limit(limit)))
 
     def create(
-        self, db: Session | AsyncSession, *, obj_in: CreateSchemaType
+            self, db: Session | AsyncSession, *, obj_in: CreateSchemaType
     ) -> ModelType | Awaitable[ModelType]:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
@@ -102,11 +100,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return self._commit_refresh(db=db, db_obj=db_obj)
 
     def update(
-        self,
-        db: Session | AsyncSession,
-        *,
-        db_obj: ModelType,
-        obj_in: UpdateSchemaType | dict[str, Any] | None = None
+            self,
+            db: Session | AsyncSession,
+            *,
+            db_obj: ModelType,
+            obj_in: UpdateSchemaType | dict[str, Any] | None = None
     ) -> ModelType | Awaitable[ModelType]:
         if obj_in is not None:
             obj_data = jsonable_encoder(db_obj)
@@ -132,7 +130,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await self._commit_refresh_async(db, db_obj=db_obj)
 
     def remove(
-        self, db: Session | AsyncSession, *, id: int
+            self, db: Session | AsyncSession, *, id: int
     ) -> ModelType | Awaitable[ModelType]:
         if isinstance(db, AsyncSession):
             return self._remove_async(db=db, id=id)

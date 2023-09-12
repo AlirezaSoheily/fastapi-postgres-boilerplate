@@ -1,12 +1,8 @@
 from datetime import timedelta, datetime
 from typing import List
-
 from .... import crud, utils
 from .... import exceptions as exc
 from ....models import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
-from ... import deps
 
 
 async def get_user_by_email(db, email):

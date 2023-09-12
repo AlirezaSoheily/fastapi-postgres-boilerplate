@@ -1,8 +1,6 @@
 from typing import Any
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.responses import HTMLResponse
-from celery.result import AsyncResult
-
 from .... import models, schemas
 from ....api import deps
 from ....core.celery_app import celery_app

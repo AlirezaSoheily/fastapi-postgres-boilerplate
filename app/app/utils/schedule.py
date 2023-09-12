@@ -1,11 +1,7 @@
 import logging
 from rocketry import Rocketry
 from app.app.api.api_v1 import services
-from fastapi import Depends
-from app.app.api import deps
-from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timedelta
-from app.app.db.session import SessionLocal, async_session
+from app.app.db.session import async_session
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -15,7 +11,7 @@ app = Rocketry(execution="async")
 
 
 # Create a task
-@app.task("every 1 days") # or every 86400 seconds
+@app.task("every 1 days")  # or every 86400 seconds
 async def test_rocketry():
     logger.info("------rocketry run Borrow schedule-------")
     async_db = async_session()

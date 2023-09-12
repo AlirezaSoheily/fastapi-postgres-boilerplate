@@ -1,6 +1,5 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import List
 from .user import User
 
 
@@ -52,39 +51,6 @@ class Book(BookBase):
 
     class Config:
         orm_mode = True
-
-
-# class ClientBase(BaseModel):
-#     email: EmailStr | None = None
-#     balance: int
-#     is_restricted: bool
-#     user_id: int
-#
-#
-# class ClientCreate(ClientBase):
-#     user_id: int
-#     balance: int = 0
-#
-#
-# class ClientUpdate(ClientBase):
-#     user_id: int
-#     balance: int
-#     is_restricted: bool
-#
-#
-# class ClientUpdateBalance(BaseModel):
-#     email: EmailStr
-#     add_amount: int
-#
-# class Client(ClientBase):
-#     id: int
-#     user: User
-#
-#     # buy: 'Buy'
-#     # borrow: 'Borrow'
-#
-#     class Config:
-#         orm_mode = True
 
 
 class BuyBase(BaseModel):

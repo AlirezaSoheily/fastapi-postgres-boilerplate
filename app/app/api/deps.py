@@ -1,14 +1,9 @@
-from datetime import datetime
 from typing import Generator, AsyncGenerator
-
 from fastapi import Depends, HTTPException, status
-# from fastapi.security import OAuth2PasswordBearer
 from fastapi.security import HTTPBearer
-from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
-
 from .. import crud, models, schemas, utils
 from ..core.config import settings
 from ..db.session import SessionLocal, async_session
@@ -29,8 +24,8 @@ async def get_db_async() -> AsyncGenerator:
 
 
 async def get_current_user(
-    authorization: str = Depends(HTTPBearer()),
-    db: Session | AsyncSession = Depends(get_db_async)
+        authorization: str = Depends(HTTPBearer()),
+        db: Session | AsyncSession = Depends(get_db_async)
 ) -> models.User:
     try:
         token = authorization.credentials
@@ -54,7 +49,7 @@ async def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Authentication Failed",
         )
-    
+
     user = await crud.user.get(db, id=token_data.sub)
     if not user:
         raise exc.InternalServiceError(
@@ -66,7 +61,7 @@ async def get_current_user(
 
 
 def get_current_active_user(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_active(current_user):
         raise exc.InternalServiceError(
@@ -78,7 +73,7 @@ def get_current_active_user(
 
 
 async def get_current_active_admin(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_admin(current_user):
         raise exc.InternalServiceError(
@@ -90,7 +85,7 @@ async def get_current_active_admin(
 
 
 async def get_current_active_superuser(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_superuser(current_user):
         raise exc.InternalServiceError(

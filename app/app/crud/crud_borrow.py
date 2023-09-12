@@ -37,7 +37,8 @@ class CRUDBorrow(CRUDBase[Borrow, BorrowCreate, BorrowUpdate]):
         return self._all(db.scalars(query))
 
     def get_active_borrows(self, db: Session | AsyncSession) -> Any:
-        query = select(Borrow).options(joinedload(Borrow.book).joinedload(Book.category)).options(joinedload(Borrow.user)).filter(Borrow.returned_date.is_(None))
+        query = select(Borrow).options(joinedload(Borrow.book).joinedload(Book.category)).options(
+            joinedload(Borrow.user)).filter(Borrow.returned_date.is_(None))
         return self._all(db.scalars(query))
 
     def book_records(self, db: Session | AsyncSession, book: Book) -> List[Borrow]:

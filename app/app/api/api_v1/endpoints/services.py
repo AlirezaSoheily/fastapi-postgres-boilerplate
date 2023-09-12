@@ -1,15 +1,11 @@
-from datetime import datetime, timedelta
 from typing import Any
 from .. import services
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from .... import crud, models, schemas, utils
+from .... import crud, models, schemas
 from ....api import deps
 from pydantic import EmailStr
-from ....models import Book, Borrow
-from ....utils import APIResponseType, APIResponse
-from .... import exceptions as exc
+from ....utils import APIResponse
 from cache import cache
 from cache.util import ONE_DAY_IN_SECONDS
 
@@ -61,7 +57,7 @@ async def get_violated_users(*, db: AsyncSession = Depends(deps.get_db_async)
                              , user_email: EmailStr | None = None,
                              current_user: models.User = Depends(deps.get_current_active_admin)) -> Any:
     """
-    get the violation from users by admin.
+    get the violation from users, if user not provided, it gives all violated users.
     """
     if user_email:
         user_violations = await services.get_a_user_violations(db, email=user_email)

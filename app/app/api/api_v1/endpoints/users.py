@@ -5,7 +5,6 @@ from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
 from starlette import status
-from starlette.requests import Request
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
