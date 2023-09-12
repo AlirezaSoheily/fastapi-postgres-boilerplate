@@ -52,7 +52,7 @@ class APIResponse(GenericModel, Generic[T]):
     content: T | None
 
     def __new__(
-        cls, data: T, *args, msg_code: int = 0, msg_status: int = 0, **kwargs
+            cls, data: T, *args, msg_code: int = 0, msg_status: int = 0, **kwargs
     ):
         if data:
             if isinstance(data, Response):
