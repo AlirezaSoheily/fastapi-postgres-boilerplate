@@ -1,3 +1,3 @@
-from .user import User, Category, Book, Buy, Borrow
-# from .book import
+from .book import Book, Category
+from .library import Buy, Borrow
 from .request_log import RequestLog
