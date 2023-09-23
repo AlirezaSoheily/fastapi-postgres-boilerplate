@@ -5,6 +5,6 @@ from .book import get_book_by_name, reduce_one_book_from_db, check_book_availabi
 from .schedule import get_active_borrow_objects, reduce_borrow_fee_from_user_balance, check_user_violation
 from .borrow import get_borrow_with_user_and_book, check_if_user_borrowed_max_amount_from_category, \
     calculate_max_allowed_borrow_days, return_book, get_all_borrow_objects_joined, get_a_book_borrow_records, get_borrows_group_by_books
-from .category import get_category_by_book, get_all_categories
+from .category import get_category_by_book, get_all_categories, check_if_category_name_is_unique
 from .buy import get_all_buy_objects, get_buys_group_by_books
 from .services import calculate_categories_profit, count_occurrences_of_unique_values, get_books_names

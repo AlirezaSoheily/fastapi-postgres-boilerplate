@@ -12,19 +12,13 @@ namespace = "library"
 
 
 @router.post('/category')
-async def create_category(*, db: AsyncSession = Depends(deps.get_db_async), category_in: schemas.CategoryCreate,
+async def create_category(category_in: schemas.CategoryCreate, db: AsyncSession = Depends(deps.get_db_async),
                           current_user: models.User = Depends(deps.get_current_active_admin)) -> APIResponseType[
     schemas.Category]:
     """
     Create new category by admin.
     """
-    category = await crud.category.get_by_name(db, name=category_in.name)
-    if category:
-        raise exc.InternalServiceError(
-            status_code=400,
-            detail="This category with this name already exists in the system.",
-            msg_code=utils.MessageCodes.bad_request,
-        )
+    await services.category.check_if_category_name_is_unique(db, category_name=category_in.name)
     category = await crud.category.create(db, obj_in=category_in)
     return APIResponse(category)
 
