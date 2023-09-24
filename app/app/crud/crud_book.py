@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from ..crud.base import CRUDBase
-from ..models.user import Book
+from ..models import Book
 from ..schemas.library import BookCreate, BookUpdate
 
 

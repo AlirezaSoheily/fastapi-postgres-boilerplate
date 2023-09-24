@@ -1,11 +1,11 @@
 from typing import Any, Dict, Union, Awaitable, List
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from ..core.security import get_password_hash, verify_password
 from ..crud.base import CRUDBase
-from ..models.user import User, Borrow
+from ..models import User, Borrow
 from ..schemas.user import UserCreate, UserUpdate
 
 
@@ -84,6 +84,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_user_by_email_eager(self, db: Session | AsyncSession, email) -> User:
         query = select(User).options(selectinload(User.borrow).selectinload(Borrow.book)).filter(User.email == email)
         return self._first(db.scalars(query))
+
+    async def add_to_user_balance(self, db: Session | AsyncSession, user: User, add_amount: int):
+        user.balance += add_amount
+        await db.commit()
+        return True
 
 
 user = CRUDUser(User)

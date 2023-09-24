@@ -6,7 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from ..crud.base import CRUDBase
-from ..models.user import User, Book, Borrow
+from ..models import User, Book, Borrow
 from ..schemas.library import BorrowCreate, BorrowUpdate
 
 
