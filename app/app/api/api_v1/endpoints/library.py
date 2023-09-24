@@ -2,10 +2,10 @@ from typing import Any
 from .. import services
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from .... import crud, models, schemas, utils
+from .... import crud, models, schemas
 from ....api import deps
 from ....utils import APIResponseType, APIResponse
-from .... import exceptions as exc
+
 
 router = APIRouter()
 namespace = "library"

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from .... import crud
-from ....models.user import Borrow, Buy, Category
+from ....models import Borrow, Buy, Category
 
 
 def calculate_categories_profit(borrows: List[Borrow], buys: List[Buy], categories: List[Category]):
