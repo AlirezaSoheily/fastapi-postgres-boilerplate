@@ -94,6 +94,7 @@ async def get_a_user_violations(db, email):
 
 async def reduce_from_user_balance(db, user: User, reduce_amount: int):
     user.balance -= reduce_amount
+    await crud.book.commit(db)
     return True
 
 

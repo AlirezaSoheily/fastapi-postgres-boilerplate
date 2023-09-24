@@ -78,7 +78,9 @@ async def buy_book(*, db: AsyncSession = Depends(deps.get_db_async), buy_in: sch
     services.check_user_restrict(user)
     services.check_user_balance(user_balance=user.balance, price=book.price)
     services.check_book_availability(book_availability=book.salable_quantity, book_wanted=1)
-    buy_obj = await crud.buy.create(db, book_name=buy_in.book_name, user_email=buy_in.user_email)
+    buy_obj = await crud.buy.create(db, book_obj=book, user_obj=user)
+    await services.reduce_one_book_from_db(db, book_=book)
+    await services.reduce_from_user_balance(db, user=user, reduce_amount=book.price)
     return APIResponse(buy_obj)
 
 
