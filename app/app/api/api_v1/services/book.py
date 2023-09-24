@@ -4,7 +4,7 @@ from ....models import Book
 from ....schemas import BookCreate, BookUpdate
 
 
-async def check_category_existence(db, book: BookCreate):
+async def check_category_existence(db, book: BookCreate) -> bool:
     categories = await crud.category.get_multi(db, limit=None)
     for category in categories:
         if book.category_name == category.name:
@@ -30,7 +30,7 @@ async def check_book_re_stocking(db, book_in: BookCreate):
 async def re_stocking_book(db, book_obj: Book, book_in: BookUpdate):
     book_obj.stock_amount += book_in.stock_amount
     book_obj.salable_quantity += book_in.salable_quantity
-    await db.commit()
+    await crud.book.commit(db=db)
 
 
 async def get_book_by_name(db, name: str):
@@ -47,7 +47,7 @@ async def get_book_by_name(db, name: str):
 async def reduce_one_book_from_db(db, book_: Book):
     book_.stock_amount -= 1
     book_.salable_quantity -= 1
-    await db.commit()
+    await crud.book.commit(db=db)
     return True
 
 

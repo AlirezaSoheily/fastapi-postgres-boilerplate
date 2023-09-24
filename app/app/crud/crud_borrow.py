@@ -49,5 +49,8 @@ class CRUDBorrow(CRUDBase[Borrow, BorrowCreate, BorrowUpdate]):
         query = select(Borrow.book_id, Borrow.id, func.count(Borrow.book_id)).group_by(Borrow.book_id, Borrow.id)
         return self._all(db.scalars(query))
 
+    async def commit(self, db: Session | AsyncSession):
+        await db.commit()
+
 
 borrow = CRUDBorrow(Borrow)

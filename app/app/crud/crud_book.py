@@ -17,5 +17,8 @@ class CRUDBook(CRUDBase[Book, BookCreate, BookUpdate]):
         query = select(Book).filter(Book.salable_quantity > 0)
         return self._all(db.scalars(query))
 
+    async def commit(self, db: Session | AsyncSession):
+        await db.commit()
+
 
 book = CRUDBook(Book)

@@ -47,7 +47,7 @@ async def return_book(db, borrow: Borrow):
     borrow.returned_date = datetime.utcnow()
     borrow.book.stock_amount += 1
     borrow.book.salable_quantity += 1
-    await db.commit()
+    await crud.borrow.commit(db=db)
 
 
 async def get_all_borrow_objects_joined(db):
